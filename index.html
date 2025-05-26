@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Gastos - Família Fernandes (Firebase)</title>
+    <title>Controle de Gastos - Família Fernandes</title>
     <style>
         * {
             margin: 0;
@@ -43,13 +43,9 @@
             padding: 5px 10px;
             border-radius: 15px;
             font-size: 12px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(46, 204, 113, 0.8);
             font-weight: bold;
         }
-
-        .sync-online { background: rgba(46, 204, 113, 0.8) !important; }
-        .sync-offline { background: rgba(231, 76, 60, 0.8) !important; }
-        .sync-connecting { background: rgba(241, 196, 15, 0.8) !important; }
 
         .header h1 {
             font-size: 2em;
@@ -75,56 +71,25 @@
             color: #333;
         }
 
-        .setup-section {
-            padding: 25px;
-            border-bottom: 2px solid #f0f0f0;
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
-        }
-
-        .setup-title {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .setup-form {
-            display: grid;
-            gap: 15px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .setup-form input {
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+        .instructions {
+            background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
+            border-left: 4px solid #4facfe;
+            padding: 20px;
+            margin: 20px;
             border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .setup-form input:focus {
-            outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
         }
 
-        .setup-form button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .setup-form button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        .instructions p {
+            color: #34495e;
+            line-height: 1.6;
+            margin-bottom: 10px;
         }
 
         .budget-section {
@@ -260,12 +225,6 @@
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
         }
 
-        .add-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
         .expenses-section {
             padding: 25px;
         }
@@ -333,18 +292,6 @@
             color: #f5576c;
         }
 
-        .expense-author {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 10px;
-            background: rgba(0, 0, 0, 0.1);
-            padding: 3px 8px;
-            border-radius: 10px;
-            color: #666;
-            font-weight: bold;
-        }
-
         .delete-btn {
             background: #ff4757;
             color: white;
@@ -386,31 +333,6 @@
             box-shadow: 0 8px 25px rgba(86, 171, 47, 0.6);
         }
 
-        .instructions {
-            background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
-            border-left: 4px solid #4facfe;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .instructions h3 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        .instructions ol {
-            margin-left: 20px;
-        }
-
-        .instructions li {
-            margin-bottom: 5px;
-            color: #34495e;
-            line-height: 1.5;
-        }
-
         .success-message {
             background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
             color: white;
@@ -420,17 +342,6 @@
             margin: 20px;
             font-weight: bold;
             box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
-        }
-
-        .error-message {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 20px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
         }
 
         @media (max-width: 600px) {
@@ -468,8 +379,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="sync-status sync-connecting" id="syncStatus">🔄 Aguardando configuração...</div>
-            <h1>💰 Controle de Gastos Sincronizado</h1>
+            <div class="sync-status">💾 Salvo Local</div>
+            <h1>💰 Controle de Gastos</h1>
             <p><strong>Família Fernandes</strong></p>
             <div class="month-selector">
                 <select id="monthSelect">
@@ -490,123 +401,95 @@
         </div>
 
         <div class="instructions">
-            <h3>🚀 Como usar esta planilha sincronizada:</h3>
-            <ol>
-                <li><strong>Configure uma vez:</strong> Cole suas informações do Firebase abaixo</li>
-                <li><strong>Use o mesmo código:</strong> Você e sua esposa usam o mesmo "Código da Família"</li>
-                <li><strong>Sincronização automática:</strong> Gastos aparecem instantaneamente nos dois celulares</li>
-                <li><strong>Sempre online:</strong> Dados salvos na nuvem, nunca se perdem</li>
-                <li><strong>Histórico completo:</strong> Todos os meses ficam salvos automaticamente</li>
-            </ol>
+            <h3>📱 Como usar em dois celulares:</h3>
+            <p><strong>1. Para sincronizar dados:</strong> Use os botões "📤 Exportar" e "📥 Importar" para compartilhar dados entre os celulares</p>
+            <p><strong>2. Backup automático:</strong> Dados salvos no celular, use "📊 Backup Completo" semanalmente</p>
+            <p><strong>3. Compartilhamento:</strong> Use "📱 WhatsApp" para enviar resumos para a família</p>
         </div>
 
-        <div id="setupSection" class="setup-section">
-            <h2 class="setup-title">⚙️ Configuração Firebase</h2>
-            <div class="setup-form">
-                <input type="text" id="apiKey" placeholder="Firebase API Key (AIza...)">
-                <input type="text" id="databaseURL" placeholder="Database URL (https://...)">
-                <input type="text" id="familyCode" placeholder="Código da Família (ex: familia-fernandes-2025)">
-                <input type="text" id="userName" placeholder="Seu Nome (Tomaz ou Nome da Esposa)">
-                <button onclick="setupFirebase()">🔗 Conectar e Sincronizar</button>
+        <div class="budget-section">
+            <div class="budget-input">
+                <label for="monthlyBudget">💰 Orçamento Mensal:</label>
+                <input type="number" id="monthlyBudget" placeholder="R$ 0,00" min="0" step="0.01">
+                <button onclick="setBudget()" class="add-btn">Definir Orçamento</button>
+            </div>
+            <div class="budget-display">
+                <div class="budget-card budget-total">
+                    <div>💵 Orçamento Total</div>
+                    <div id="totalBudget">R$ 0,00</div>
+                </div>
+                <div class="budget-card budget-used">
+                    <div>💸 Total Gasto</div>
+                    <div id="usedBudget">R$ 0,00</div>
+                </div>
+                <div class="budget-card budget-remaining">
+                    <div>💚 Saldo Restante</div>
+                    <div id="remainingBudget">R$ 0,00</div>
+                </div>
             </div>
         </div>
 
-        <div id="mainApp" style="display: none;">
-            <div class="budget-section">
-                <div class="budget-input">
-                    <label for="monthlyBudget">💰 Orçamento Mensal:</label>
-                    <input type="number" id="monthlyBudget" placeholder="R$ 0,00" min="0" step="0.01">
-                    <button onclick="setBudget()" class="add-btn">Definir Orçamento</button>
+        <div class="form-section">
+            <h2 class="form-title">➕ Adicionar Novo Gasto</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="description">📝 Descrição:</label>
+                    <input type="text" id="description" placeholder="Ex: Cinema, Restaurante, Show...">
                 </div>
-                <div class="budget-display">
-                    <div class="budget-card budget-total">
-                        <div>💵 Orçamento Total</div>
-                        <div id="totalBudget">R$ 0,00</div>
-                    </div>
-                    <div class="budget-card budget-used">
-                        <div>💸 Total Gasto</div>
-                        <div id="usedBudget">R$ 0,00</div>
-                    </div>
-                    <div class="budget-card budget-remaining">
-                        <div>💚 Saldo Restante</div>
-                        <div id="remainingBudget">R$ 0,00</div>
-                    </div>
+                <div class="form-group">
+                    <label for="amount">💰 Valor (R$):</label>
+                    <input type="number" id="amount" placeholder="0,00" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="date">📅 Data:</label>
+                    <input type="date" id="date">
+                </div>
+                <div class="form-group">
+                    <label for="category">🏷️ Categoria:</label>
+                    <select id="category">
+                        <option value="Cinema">🎬 Cinema</option>
+                        <option value="Restaurante">🍽️ Restaurante</option>
+                        <option value="Delivery">🍕 Delivery</option>
+                        <option value="Streaming">📺 Streaming</option>
+                        <option value="Shows/Eventos">🎵 Shows/Eventos</option>
+                        <option value="Viagens">✈️ Viagens</option>
+                        <option value="Jogos">🎮 Jogos</option>
+                        <option value="Livros">📚 Livros</option>
+                        <option value="Shopping">🛍️ Shopping</option>
+                        <option value="Outros">🎯 Outros</option>
+                    </select>
                 </div>
             </div>
+            <button onclick="addExpense()" class="add-btn">💫 Adicionar Gasto</button>
+        </div>
 
-            <div class="form-section">
-                <h2 class="form-title">➕ Adicionar Novo Gasto</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="description">📝 Descrição:</label>
-                        <input type="text" id="description" placeholder="Ex: Cinema, Restaurante, Show...">
-                    </div>
-                    <div class="form-group">
-                        <label for="amount">💰 Valor (R$):</label>
-                        <input type="number" id="amount" placeholder="0,00" min="0" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label for="date">📅 Data:</label>
-                        <input type="date" id="date">
-                    </div>
-                    <div class="form-group">
-                        <label for="category">🏷️ Categoria:</label>
-                        <select id="category">
-                            <option value="Cinema">🎬 Cinema</option>
-                            <option value="Restaurante">🍽️ Restaurante</option>
-                            <option value="Delivery">🍕 Delivery</option>
-                            <option value="Streaming">📺 Streaming</option>
-                            <option value="Shows/Eventos">🎵 Shows/Eventos</option>
-                            <option value="Viagens">✈️ Viagens</option>
-                            <option value="Jogos">🎮 Jogos</option>
-                            <option value="Livros">📚 Livros</option>
-                            <option value="Shopping">🛍️ Shopping</option>
-                            <option value="Outros">🎯 Outros</option>
-                        </select>
-                    </div>
-                </div>
-                <button onclick="addExpense()" class="add-btn" id="addExpenseBtn">💫 Adicionar Gasto</button>
-            </div>
-
-            <div class="expenses-section">
-                <h2 class="expenses-title">📋 Gastos do Mês Sincronizados</h2>
-                <div id="expensesList" class="expenses-list">
-                    <div style="text-align: center; color: #666; padding: 40px;">
-                        🔄 Carregando gastos sincronizados...
-                    </div>
+        <div class="expenses-section">
+            <h2 class="expenses-title">📋 Gastos do Mês</h2>
+            <div id="expensesList" class="expenses-list">
+                <div style="text-align: center; color: #666; padding: 40px;">
+                    😊 Nenhum gasto registrado este mês!
                 </div>
             </div>
+        </div>
 
-            <div class="export-section">
-                <button onclick="exportToWhatsApp()" class="export-btn">📱 Compartilhar no WhatsApp</button>
-                <button onclick="generateReport()" class="export-btn">📊 Gerar Relatório Completo</button>
-                <button onclick="viewAllData()" class="export-btn" style="background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);">🗄️ Ver Todos os Dados</button>
-            </div>
+        <div class="export-section">
+            <button onclick="exportToWhatsApp()" class="export-btn">📱 Compartilhar no WhatsApp</button>
+            <button onclick="generateReport()" class="export-btn">📊 Gerar Relatório</button>
+            <button onclick="exportData()" class="export-btn" style="background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);">📤 Exportar Dados</button>
+            <button onclick="importData()" class="export-btn" style="background: linear-gradient(135deg, #5f27cd 0%, #00d2d3 100%);">📥 Importar Dados</button>
+            <button onclick="backupData()" class="export-btn" style="background: linear-gradient(135deg, #2c2c54 0%, #40407a 100%);">📊 Backup Completo</button>
         </div>
     </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
         let expenses = {};
         let budgets = {};
-        let database = null;
-        let familyCode = '';
-        let userName = '';
-        let isOnline = false;
-
-        // Debug function
-        function debugLog(message) {
-            console.log(`[DEBUG] ${message}`);
-        }
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
-            debugLog('Página carregada');
             setCurrentMonth();
-            loadLocalConfig();
+            loadData();
+            updateDisplay();
             
             // Set today's date as default
             document.getElementById('date').valueAsDate = new Date();
@@ -621,209 +504,45 @@
             const now = new Date();
             const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             document.getElementById('monthSelect').value = monthKey;
-            debugLog(`Mês atual definido: ${monthKey}`);
         }
 
         function getCurrentMonth() {
             return document.getElementById('monthSelect').value;
         }
 
-        function showMessage(message, type = 'success') {
-            debugLog(`Mensagem: ${message} (${type})`);
-            const existingMessage = document.querySelector('.success-message, .error-message');
+        function showMessage(message) {
+            const existingMessage = document.querySelector('.success-message');
             if (existingMessage) {
                 existingMessage.remove();
             }
 
             const messageDiv = document.createElement('div');
-            messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            messageDiv.className = 'success-message';
             messageDiv.textContent = message;
             
-            const setupSection = document.getElementById('setupSection');
-            setupSection.parentNode.insertBefore(messageDiv, setupSection.nextSibling);
+            const container = document.querySelector('.container');
+            container.appendChild(messageDiv);
             
             setTimeout(() => {
                 messageDiv.remove();
-            }, 5000);
+            }, 3000);
         }
 
-        function loadLocalConfig() {
-            debugLog('Carregando configuração local...');
-            const saved = localStorage.getItem('firebaseConfig');
-            if (saved) {
-                try {
-                    const config = JSON.parse(saved);
-                    document.getElementById('apiKey').value = config.apiKey || '';
-                    document.getElementById('databaseURL').value = config.databaseURL || '';
-                    document.getElementById('familyCode').value = config.familyCode || '';
-                    document.getElementById('userName').value = config.userName || '';
-                    
-                    if (config.apiKey && config.databaseURL && config.familyCode && config.userName) {
-                        debugLog('Configuração encontrada, tentando conectar automaticamente...');
-                        setTimeout(() => setupFirebase(), 1000);
-                    }
-                } catch (error) {
-                    debugLog('Erro ao carregar configuração: ' + error.message);
-                }
-            }
-        }
-
-        function setupFirebase() {
-            debugLog('Iniciando configuração do Firebase...');
+        function loadData() {
+            const savedExpenses = localStorage.getItem('familyExpenses');
+            const savedBudgets = localStorage.getItem('familyBudgets');
             
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const databaseURL = document.getElementById('databaseURL').value.trim();
-            familyCode = document.getElementById('familyCode').value.trim();
-            userName = document.getElementById('userName').value.trim();
-
-            debugLog(`API Key: ${apiKey.substring(0, 10)}...`);
-            debugLog(`Database URL: ${databaseURL}`);
-            debugLog(`Family Code: ${familyCode}`);
-            debugLog(`User Name: ${userName}`);
-
-            if (!apiKey || !databaseURL || !familyCode || !userName) {
-                showMessage('❌ Por favor, preencha todos os campos!', 'error');
-                return;
+            if (savedExpenses) {
+                expenses = JSON.parse(savedExpenses);
             }
-
-            // Garantir que o URL termine com /
-            let correctedURL = databaseURL;
-            if (!correctedURL.endsWith('/')) {
-                correctedURL += '/';
-                document.getElementById('databaseURL').value = correctedURL;
-            }
-
-            // Salvar configuração
-            const config = { apiKey, databaseURL: correctedURL, familyCode, userName };
-            localStorage.setItem('firebaseConfig', JSON.stringify(config));
-            debugLog('Configuração salva no localStorage');
-
-            try {
-                debugLog('Tentando inicializar Firebase...');
-                
-                // Configurar Firebase
-                const firebaseConfig = {
-                    apiKey: apiKey,
-                    authDomain: `${familyCode}.firebaseapp.com`,
-                    databaseURL: correctedURL,
-                    projectId: familyCode.replace('familia-', 'controle-gastos-'),
-                    storageBucket: `${familyCode}.appspot.com`,
-                    messagingSenderId: "546700025818",
-                    appId: "1:546700025818:web:17995bae8abd754b40aae3"
-                };
-
-                // Verificar se Firebase já foi inicializado
-                if (firebase.apps.length === 0) {
-                    firebase.initializeApp(firebaseConfig);
-                    debugLog('Firebase inicializado com sucesso');
-                } else {
-                    debugLog('Firebase já estava inicializado');
-                }
-
-                database = firebase.database();
-                debugLog('Database referência obtida');
-
-                // Teste de conexão
-                testConnection()
-                    .then(() => {
-                        debugLog('Teste de conexão bem-sucedido');
-                        // Configurar listeners
-                        setupDataListeners();
-                        
-                        // Esconder setup e mostrar app
-                        document.getElementById('setupSection').style.display = 'none';
-                        document.getElementById('mainApp').style.display = 'block';
-                        
-                        updateSyncStatus(true);
-                        loadFirebaseData();
-                        
-                        showMessage('🎉 Conectado com sucesso! Dados sincronizando...', 'success');
-                    })
-                    .catch((error) => {
-                        debugLog('Erro no teste de conexão: ' + error.message);
-                        showMessage('❌ Erro na conexão: ' + error.message, 'error');
-                        updateSyncStatus(false);
-                    });
-
-            } catch (error) {
-                debugLog('Erro ao configurar Firebase: ' + error.message);
-                showMessage('❌ Erro ao conectar com Firebase: ' + error.message, 'error');
-                updateSyncStatus(false);
+            if (savedBudgets) {
+                budgets = JSON.parse(savedBudgets);
             }
         }
 
-        function testConnection() {
-            debugLog('Testando conexão com Firebase...');
-            return new Promise((resolve, reject) => {
-                const testRef = database.ref(`families/${familyCode}/test`);
-                testRef.set({
-                    timestamp: Date.now(),
-                    user: userName,
-                    message: 'Teste de conexão'
-                })
-                .then(() => {
-                    debugLog('Teste de escrita bem-sucedido');
-                    return testRef.once('value');
-                })
-                .then((snapshot) => {
-                    debugLog('Teste de leitura bem-sucedido');
-                    // Remover dados de teste
-                    return testRef.remove();
-                })
-                .then(() => {
-                    debugLog('Cleanup do teste realizado');
-                    resolve();
-                })
-                .catch((error) => {
-                    debugLog('Erro no teste: ' + error.message);
-                    reject(error);
-                });
-            });
-        }
-
-        function setupDataListeners() {
-            // Listener para gastos
-            database.ref(`families/${familyCode}/expenses`).on('value', (snapshot) => {
-                expenses = snapshot.val() || {};
-                updateDisplay();
-            });
-
-            // Listener para orçamentos
-            database.ref(`families/${familyCode}/budgets`).on('value', (snapshot) => {
-                budgets = snapshot.val() || {};
-                updateDisplay();
-            });
-
-            // Listener para conexão
-            database.ref('.info/connected').on('value', (snapshot) => {
-                updateSyncStatus(snapshot.val());
-            });
-        }
-
-        function updateSyncStatus(online) {
-            isOnline = online;
-            const statusEl = document.getElementById('syncStatus');
-            if (online) {
-                statusEl.textContent = '🟢 Online - Sincronizado';
-                statusEl.className = 'sync-status sync-online';
-            } else {
-                statusEl.textContent = '🔴 Offline';
-                statusEl.className = 'sync-status sync-offline';
-            }
-        }
-
-        function loadFirebaseData() {
-            database.ref(`families/${familyCode}`).once('value')
-                .then((snapshot) => {
-                    const data = snapshot.val() || {};
-                    expenses = data.expenses || {};
-                    budgets = data.budgets || {};
-                    updateDisplay();
-                })
-                .catch((error) => {
-                    console.error('Erro ao carregar dados:', error);
-                    showMessage('⚠️ Erro ao carregar dados: ' + error.message, 'error');
-                });
+        function saveData() {
+            localStorage.setItem('familyExpenses', JSON.stringify(expenses));
+            localStorage.setItem('familyBudgets', JSON.stringify(budgets));
         }
 
         function setBudget() {
@@ -831,87 +550,190 @@
             const budget = parseFloat(document.getElementById('monthlyBudget').value) || 0;
             
             if (budget <= 0) {
-                showMessage('❌ Digite um valor válido para o orçamento!', 'error');
+                showMessage('❌ Digite um valor válido para o orçamento!');
                 return;
             }
             
             budgets[month] = budget;
-            
-            if (database) {
-                database.ref(`families/${familyCode}/budgets/${month}`).set(budget)
-                    .then(() => {
-                        showMessage(`✅ Orçamento de R$ ${budget.toFixed(2).replace('.', ',')} definido para ${getMonthName(month)}!`, 'success');
-                    })
-                    .catch((error) => {
-                        showMessage('❌ Erro ao salvar orçamento: ' + error.message, 'error');
-                    });
-            }
-            
+            saveData();
             updateDisplay();
+            
             document.getElementById('monthlyBudget').value = '';
+            showMessage(`✅ Orçamento de R$ ${budget.toFixed(2).replace('.', ',')} definido para ${getMonthName(month)}!`);
         }
 
         function addExpense() {
-            if (!isOnline) {
-                showMessage('❌ Sem conexão! Verifique sua internet.', 'error');
-                return;
-            }
-
             const description = document.getElementById('description').value.trim();
             const amount = parseFloat(document.getElementById('amount').value) || 0;
             const date = document.getElementById('date').value;
             const category = document.getElementById('category').value;
             
             if (!description || amount <= 0 || !date) {
-                showMessage('❌ Por favor, preencha todos os campos corretamente!', 'error');
+                showMessage('❌ Por favor, preencha todos os campos corretamente!');
                 return;
             }
             
             const month = getCurrentMonth();
-            const expenseId = Date.now().toString();
+            if (!expenses[month]) {
+                expenses[month] = [];
+            }
             
             const expense = {
-                id: expenseId,
+                id: Date.now(),
                 description,
                 amount,
                 date,
                 category,
-                addedBy: userName,
                 timestamp: new Date().toISOString()
             };
             
-            // Desabilitar botão temporariamente
-            const btn = document.getElementById('addExpenseBtn');
-            btn.disabled = true;
-            btn.textContent = '💫 Salvando...';
+            expenses[month].push(expense);
+            saveData();
+            updateDisplay();
+            clearForm();
             
-            // Adicionar no Firebase
-            database.ref(`families/${familyCode}/expenses/${month}/${expenseId}`).set(expense)
-                .then(() => {
-                    clearForm();
-                    showMessage(`✅ Gasto "${description}" adicionado com sucesso!`, 'success');
-                    btn.disabled = false;
-                    btn.textContent = '💫 Adicionar Gasto';
-                })
-                .catch((error) => {
-                    showMessage('❌ Erro ao salvar: ' + error.message, 'error');
-                    btn.disabled = false;
-                    btn.textContent = '💫 Adicionar Gasto';
-                });
+            showMessage(`✅ Gasto "${description}" adicionado com sucesso!`);
         }
 
         function deleteExpense(month, expenseId) {
-            if (!isOnline) {
-                showMessage('❌ Sem conexão! Não é possível excluir.', 'error');
-                return;
-            }
-
             if (confirm('🗑️ Tem certeza que deseja excluir este gasto?')) {
-                database.ref(`families/${familyCode}/expenses/${month}/${expenseId}`).remove()
-                    .then(() => {
-                        showMessage('✅ Gasto excluído com sucesso!', 'success');
-                    })
-                    .catch((error) => {
-                        showMessage('❌ Erro ao excluir: ' + error.message, 'error');
-                    });
+                expenses[month] = expenses[month].filter(expense => expense.id !== expenseId);
+                saveData();
+                updateDisplay();
+                showMessage('✅ Gasto excluído com sucesso!');
             }
+        }
+
+        function clearForm() {
+            document.getElementById('description').value = '';
+            document.getElementById('amount').value = '';
+            document.getElementById('date').valueAsDate = new Date();
+            document.getElementById('category').value = 'Cinema';
+        }
+
+        function updateDisplay() {
+            const month = getCurrentMonth();
+            const monthExpenses = expenses[month] || [];
+            const monthBudget = budgets[month] || 0;
+            
+            // Update budget display
+            const totalSpent = monthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const remaining = monthBudget - totalSpent;
+            
+            document.getElementById('totalBudget').textContent = `R$ ${monthBudget.toFixed(2).replace('.', ',')}`;
+            document.getElementById('usedBudget').textContent = `R$ ${totalSpent.toFixed(2).replace('.', ',')}`;
+            document.getElementById('remainingBudget').textContent = `R$ ${remaining.toFixed(2).replace('.', ',')}`;
+            document.getElementById('monthlyBudget').value = monthBudget || '';
+            
+            // Update expenses list
+            const expensesList = document.getElementById('expensesList');
+            if (monthExpenses.length === 0) {
+                expensesList.innerHTML = '<div style="text-align: center; color: #666; padding: 40px;">😊 Nenhum gasto registrado este mês!</div>';
+            } else {
+                expensesList.innerHTML = monthExpenses
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .map(expense => `
+                        <div class="expense-item">
+                            <div class="expense-header">
+                                <span class="expense-category">${expense.category}</span>
+                                <span class="expense-date">📅 ${formatDate(expense.date)}</span>
+                                <button class="delete-btn" onclick="deleteExpense('${month}', ${expense.id})">🗑️ Excluir</button>
+                            </div>
+                            <div class="expense-description">${expense.description}</div>
+                            <div class="expense-amount">R$ ${expense.amount.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                    `).join('');
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        function exportToWhatsApp() {
+            const month = getCurrentMonth();
+            const monthExpenses = expenses[month] || [];
+            const monthBudget = budgets[month] || 0;
+            const totalSpent = monthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const remaining = monthBudget - totalSpent;
+            const monthName = getMonthName(month);
+            
+            let message = `💰 *GASTOS ${monthName.toUpperCase()} - FAMÍLIA FERNANDES*\n\n`;
+            message += `📊 *RESUMO:*\n`;
+            message += `• Orçamento: R$ ${monthBudget.toFixed(2).replace('.', ',')}\n`;
+            message += `• Gasto: R$ ${totalSpent.toFixed(2).replace('.', ',')}\n`;
+            message += `• Restante: R$ ${remaining.toFixed(2).replace('.', ',')}\n`;
+            message += `• Percentual usado: ${monthBudget > 0 ? ((totalSpent / monthBudget) * 100).toFixed(1) : 0}%\n\n`;
+            
+            if (monthExpenses.length > 0) {
+                message += `📋 *GASTOS DETALHADOS:*\n`;
+                
+                // Agrupar por categoria
+                const byCategory = {};
+                monthExpenses.forEach(expense => {
+                    if (!byCategory[expense.category]) {
+                        byCategory[expense.category] = [];
+                    }
+                    byCategory[expense.category].push(expense);
+                });
+                
+                Object.keys(byCategory).forEach(category => {
+                    const categoryTotal = byCategory[category].reduce((sum, expense) => sum + expense.amount, 0);
+                    message += `\n*${category}* (R$ ${categoryTotal.toFixed(2).replace('.', ',')})\n`;
+                    byCategory[category].forEach(expense => {
+                        message += `• ${formatDate(expense.date)} - ${expense.description}: R$ ${expense.amount.toFixed(2).replace('.', ',')}\n`;
+                    });
+                });
+            } else {
+                message += `😊 *Nenhum gasto registrado este mês!*\n`;
+            }
+            
+            message += `\n📱 _Gerado pelo Controle de Gastos Família Fernandes_`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function generateReport() {
+            const month = getCurrentMonth();
+            const monthExpenses = expenses[month] || [];
+            const monthBudget = budgets[month] || 0;
+            const totalSpent = monthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const monthName = getMonthName(month);
+            
+            // Análise por categoria
+            const byCategory = {};
+            monthExpenses.forEach(expense => {
+                if (!byCategory[expense.category]) {
+                    byCategory[expense.category] = { total: 0, count: 0 };
+                }
+                byCategory[expense.category].total += expense.amount;
+                byCategory[expense.category].count += 1;
+            });
+            
+            let report = `📊 RELATÓRIO DETALHADO - ${monthName.toUpperCase()}\n`;
+            report += `════════════════════════════════════════\n\n`;
+            report += `🏠 FAMÍLIA FERNANDES - CONTROLE FINANCEIRO\n\n`;
+            
+            report += `💰 RESUMO FINANCEIRO:\n`;
+            report += `• Orçamento Mensal: R$ ${monthBudget.toFixed(2).replace('.', ',')}\n`;
+            report += `• Total Gasto: R$ ${totalSpent.toFixed(2).replace('.', ',')}\n`;
+            report += `• Saldo Restante: R$ ${(monthBudget - totalSpent).toFixed(2).replace('.', ',')}\n`;
+            report += `• Percentual Usado: ${monthBudget > 0 ? ((totalSpent / monthBudget) * 100).toFixed(1) : 0}%\n`;
+            
+            if (monthBudget > 0) {
+                const status = (totalSpent / monthBudget) > 0.9 ? '🔴 ATENÇÃO! Orçamento quase estourado!' :
+                               (totalSpent / monthBudget) > 0.7 ? '🟡 Cuidado, 70% do orçamento usado' :
+                               '🟢 Orçamento sob controle';
+                report += `• Status: ${status}\n`;
+            }
+            
+            report += `\n`;
+            
+            if (Object.keys(byCategory).length > 0) {
+                report += `📈 ANÁLISE POR CATEGORIA:\n`;
+                Object.keys(byCategory)
+                    .sort((a, b) => byCategory[b].total - byCategory[a].total)
+                    .forEach(category => {
