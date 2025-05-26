@@ -586,8 +586,8 @@
     </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
         let expenses = {};
@@ -597,8 +597,14 @@
         let userName = '';
         let isOnline = false;
 
+        // Debug function
+        function debugLog(message) {
+            console.log(`[DEBUG] ${message}`);
+        }
+
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Página carregada');
             setCurrentMonth();
             loadLocalConfig();
             
@@ -615,6 +621,7 @@
             const now = new Date();
             const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             document.getElementById('monthSelect').value = monthKey;
+            debugLog(`Mês atual definido: ${monthKey}`);
         }
 
         function getCurrentMonth() {
@@ -622,6 +629,7 @@
         }
 
         function showMessage(message, type = 'success') {
+            debugLog(`Mensagem: ${message} (${type})`);
             const existingMessage = document.querySelector('.success-message, .error-message');
             if (existingMessage) {
                 existingMessage.remove();
@@ -640,61 +648,137 @@
         }
 
         function loadLocalConfig() {
+            debugLog('Carregando configuração local...');
             const saved = localStorage.getItem('firebaseConfig');
             if (saved) {
-                const config = JSON.parse(saved);
-                document.getElementById('apiKey').value = config.apiKey || '';
-                document.getElementById('databaseURL').value = config.databaseURL || '';
-                document.getElementById('familyCode').value = config.familyCode || '';
-                document.getElementById('userName').value = config.userName || '';
-                
-                if (config.apiKey && config.databaseURL && config.familyCode && config.userName) {
-                    setupFirebase();
+                try {
+                    const config = JSON.parse(saved);
+                    document.getElementById('apiKey').value = config.apiKey || '';
+                    document.getElementById('databaseURL').value = config.databaseURL || '';
+                    document.getElementById('familyCode').value = config.familyCode || '';
+                    document.getElementById('userName').value = config.userName || '';
+                    
+                    if (config.apiKey && config.databaseURL && config.familyCode && config.userName) {
+                        debugLog('Configuração encontrada, tentando conectar automaticamente...');
+                        setTimeout(() => setupFirebase(), 1000);
+                    }
+                } catch (error) {
+                    debugLog('Erro ao carregar configuração: ' + error.message);
                 }
             }
         }
 
         function setupFirebase() {
+            debugLog('Iniciando configuração do Firebase...');
+            
             const apiKey = document.getElementById('apiKey').value.trim();
             const databaseURL = document.getElementById('databaseURL').value.trim();
             familyCode = document.getElementById('familyCode').value.trim();
             userName = document.getElementById('userName').value.trim();
+
+            debugLog(`API Key: ${apiKey.substring(0, 10)}...`);
+            debugLog(`Database URL: ${databaseURL}`);
+            debugLog(`Family Code: ${familyCode}`);
+            debugLog(`User Name: ${userName}`);
 
             if (!apiKey || !databaseURL || !familyCode || !userName) {
                 showMessage('❌ Por favor, preencha todos os campos!', 'error');
                 return;
             }
 
+            // Garantir que o URL termine com /
+            let correctedURL = databaseURL;
+            if (!correctedURL.endsWith('/')) {
+                correctedURL += '/';
+                document.getElementById('databaseURL').value = correctedURL;
+            }
+
             // Salvar configuração
-            const config = { apiKey, databaseURL, familyCode, userName };
+            const config = { apiKey, databaseURL: correctedURL, familyCode, userName };
             localStorage.setItem('firebaseConfig', JSON.stringify(config));
+            debugLog('Configuração salva no localStorage');
 
             try {
+                debugLog('Tentando inicializar Firebase...');
+                
                 // Configurar Firebase
                 const firebaseConfig = {
                     apiKey: apiKey,
-                    databaseURL: databaseURL
+                    authDomain: `${familyCode}.firebaseapp.com`,
+                    databaseURL: correctedURL,
+                    projectId: familyCode.replace('familia-', 'controle-gastos-'),
+                    storageBucket: `${familyCode}.appspot.com`,
+                    messagingSenderId: "546700025818",
+                    appId: "1:546700025818:web:17995bae8abd754b40aae3"
                 };
 
-                firebase.initializeApp(firebaseConfig);
-                database = firebase.database();
+                // Verificar se Firebase já foi inicializado
+                if (firebase.apps.length === 0) {
+                    firebase.initializeApp(firebaseConfig);
+                    debugLog('Firebase inicializado com sucesso');
+                } else {
+                    debugLog('Firebase já estava inicializado');
+                }
 
-                // Configurar listeners
-                setupDataListeners();
-                
-                // Esconder setup e mostrar app
-                document.getElementById('setupSection').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                
-                updateSyncStatus(true);
-                loadFirebaseData();
-                
-                showMessage('🎉 Conectado com sucesso! Dados sincronizando...', 'success');
+                database = firebase.database();
+                debugLog('Database referência obtida');
+
+                // Teste de conexão
+                testConnection()
+                    .then(() => {
+                        debugLog('Teste de conexão bem-sucedido');
+                        // Configurar listeners
+                        setupDataListeners();
+                        
+                        // Esconder setup e mostrar app
+                        document.getElementById('setupSection').style.display = 'none';
+                        document.getElementById('mainApp').style.display = 'block';
+                        
+                        updateSyncStatus(true);
+                        loadFirebaseData();
+                        
+                        showMessage('🎉 Conectado com sucesso! Dados sincronizando...', 'success');
+                    })
+                    .catch((error) => {
+                        debugLog('Erro no teste de conexão: ' + error.message);
+                        showMessage('❌ Erro na conexão: ' + error.message, 'error');
+                        updateSyncStatus(false);
+                    });
 
             } catch (error) {
+                debugLog('Erro ao configurar Firebase: ' + error.message);
                 showMessage('❌ Erro ao conectar com Firebase: ' + error.message, 'error');
                 updateSyncStatus(false);
             }
+        }
+
+        function testConnection() {
+            debugLog('Testando conexão com Firebase...');
+            return new Promise((resolve, reject) => {
+                const testRef = database.ref(`families/${familyCode}/test`);
+                testRef.set({
+                    timestamp: Date.now(),
+                    user: userName,
+                    message: 'Teste de conexão'
+                })
+                .then(() => {
+                    debugLog('Teste de escrita bem-sucedido');
+                    return testRef.once('value');
+                })
+                .then((snapshot) => {
+                    debugLog('Teste de leitura bem-sucedido');
+                    // Remover dados de teste
+                    return testRef.remove();
+                })
+                .then(() => {
+                    debugLog('Cleanup do teste realizado');
+                    resolve();
+                })
+                .catch((error) => {
+                    debugLog('Erro no teste: ' + error.message);
+                    reject(error);
+                });
+            });
         }
 
         function setupDataListeners() {
@@ -831,4 +915,3 @@
                         showMessage('❌ Erro ao excluir: ' + error.message, 'error');
                     });
             }
-        
